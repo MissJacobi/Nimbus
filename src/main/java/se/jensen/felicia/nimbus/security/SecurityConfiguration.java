@@ -38,7 +38,9 @@ public class SecurityConfiguration {
     public SecurityFilterChain securityFilterChain(HttpSecurity http)throws Exception{
         http
                 .csrf(csrf -> csrf.disable())
-                .authorizeHttpRequests(auth -> auth.anyRequest().authenticated())
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**","/swagger-ui.html")
+                        .anyRequest().authenticated())
                 .httpBasic(Customizer.withDefaults())
                 .formLogin(Customizer.withDefaults());
 
