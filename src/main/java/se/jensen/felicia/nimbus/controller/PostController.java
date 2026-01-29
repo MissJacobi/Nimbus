@@ -16,58 +16,60 @@ import java.util.List;
 @RequestMapping("/post")
 public class PostController {
 
-    private List<Post> post = new ArrayList<>();
+    private List<Post> posts = new ArrayList<>();
+    private long nextId = 1;
 
     @GetMapping
     public ResponseEntity<List<Post>> getAllPosts(){
-        return ResponseEntity.ok(post);
+        return ResponseEntity.ok(posts);
     }
 
     @PostMapping
     public ResponseEntity<PostResponseDTO> addPost(@Valid @RequestBody PostRequestDTO dto){
         LocalDateTime now = LocalDateTime.now();
         Post post = new Post();
-        post.setId(0L);
         post.setText(dto.text());
         post.setCreatedAt(now);
 
-        Post.add(post);
+        post.setId(nextId++);
+        posts.add(post);
         PostResponseDTO response = new PostResponseDTO(post.getId(),post.getText(),post.getCreatedAt());
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    @GetMapping("/{index}")
-    public ResponseEntity<PostResponseDTO> getPostByIndex(@PathVariable long index){
-        if (index < 0 || index >= post.size()){
+    @GetMapping("/{id}")
+    public ResponseEntity<PostResponseDTO> getPostByIndex(@PathVariable long id){
+        if (id < 0 || id >= posts.size()){
             return ResponseEntity.notFound().build();
         }
-        Post post =  Post.get(index);
-        PostResponseDTO response = new PostResponseDTO(0L,post.getText(),post.getCreatedAt());
+        Post post = posts.get((int) id);
+        PostResponseDTO response = new PostResponseDTO(post.getId(),post.getText(),post.getCreatedAt());
         return ResponseEntity.ok(response);
     }
 
-    @PutMapping("{index}")
-    public ResponseEntity<PostResponseDTO> updatePost(@PathVariable long index,
+    @PutMapping("/{id}")
+    public ResponseEntity<PostResponseDTO> updatePost(@PathVariable long id,
                                                       @Valid @RequestBody PostRequestDTO dto){
-        if (index < 0 || index >= post.size()){
+        if (id < 0 || id >= posts.size()){
             return ResponseEntity.notFound().build();
         }
         LocalDateTime now = LocalDateTime.now();
-        Post post = Post.get(index);
+        Post post = posts.get((int) id);
         post.setText(dto.text());
         post.setCreatedAt(now);
 
-        PostResponseDTO response = new PostResponseDTO(index, post.getText(), post.getCreatedAt());
+        PostResponseDTO response = new PostResponseDTO(post.getId(), post.getText(), post.getCreatedAt());
 
         return ResponseEntity.ok(response);
     }
 
-    @DeleteMapping("/{index}")
-    public ResponseEntity<Void> deletePost(@PathVariable long index){
-        if (index < 0 || index >= post.size()) {
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deletePost(@PathVariable long id){
+        if (id < 0 || id >= posts.size()) {
             return ResponseEntity.notFound().build();
         }
+        posts.remove((int) id);
         return ResponseEntity.noContent().build();
     }
 

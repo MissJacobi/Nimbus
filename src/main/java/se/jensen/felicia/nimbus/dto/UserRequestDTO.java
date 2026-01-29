@@ -10,7 +10,7 @@ public record UserRequestDTO(
         @NotBlank(message = "Fältet får inte lämnas tomt.")
         String email,
         @NotBlank(message = "Fältet får inte lämnas tomt.")
-        @Pattern(regexp = "^[A-Za-z0-9]", message = "Endast bokstäver och siffror tillåtna.")
+        @Pattern(regexp = "^[A-Za-z0-9]+$", message = "Endast bokstäver och siffror tillåtna.")
         @Size(min = 8, max = 20)
         String password,
         @NotBlank(message = "Fältet får inte lämnas tomt.")

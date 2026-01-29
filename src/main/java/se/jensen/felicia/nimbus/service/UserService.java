@@ -82,4 +82,17 @@ public class UserService {
 
     }
 
+    public UserResponseDTO getUserWithID(Long id){
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("User not found with id: " + id));
+        return userMapper.toDto(user);
+    }
+
+    public void deleteUser(Long id) {
+        if (!userRepository.existsById(id)) {
+            throw new NoSuchElementException("User not found with id: " + id);
+        }
+        userRepository.deleteById(id);
+    }
+
 }

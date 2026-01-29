@@ -5,11 +5,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import se.jensen.felicia.nimbus.dto.*;
-import se.jensen.felicia.nimbus.model.User;
 import se.jensen.felicia.nimbus.service.PostService;
 import se.jensen.felicia.nimbus.service.UserService;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -17,7 +15,6 @@ import java.util.List;
 public class UserController {
 
     private final PostService postService;
-    private List<User> users = new ArrayList<>();
     private final UserService userService;
 
     public UserController(UserService userService, PostService postService) {
@@ -46,22 +43,21 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    /* @GetMapping("/{index}")
-    public ResponseEntity<UserResponseDTO> getUserByIndex(@PathVariable Long id,@RequestBody UserRequestDTO dto){
-        List<UserResponseDTO> userFromDB = userService.getAllUsers();
+    @GetMapping("/{id}")
+    public ResponseEntity <UserResponseDTO> getUserByIndex(@PathVariable Long id){
+        UserResponseDTO userFromDB = userService.getUserWithID(id);
         return ResponseEntity.ok(userFromDB);
-    }*/
+    }
 
-    @PutMapping
+    @PutMapping("/{id}")
     public ResponseEntity<UserResponseDTO> updateUser(@PathVariable Long id,@RequestBody UserRequestDTO dto ){
         UserResponseDTO user = userService.updateUser(dto, id);
         return ResponseEntity.ok(user);
     }
-    @DeleteMapping("/{index}")
+
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id){
-        if(id < 0 || id >= users.size()){
-            return ResponseEntity.notFound().build();
-        }
+        userService.deleteUser(id);
         return ResponseEntity.noContent().build();
     }
 
