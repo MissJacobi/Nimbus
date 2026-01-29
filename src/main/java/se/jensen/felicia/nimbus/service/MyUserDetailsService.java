@@ -18,8 +18,14 @@ public class MyUserDetailsService implements UserDetailsService {
 
         @Override
         public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+            System.out.println("LOGG: Försöker logga in användare: " + username);
+
         User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
+                .orElseThrow(() -> {
+                    System.out.println("LOGG: Hittade inte användare i databasen!");
+                    return new UsernameNotFoundException("User not found: " + username);
+                });
+            System.out.println("LOGG: Hittade användare! Hash i DB: " + user.getPassword());
         return new MyUserDetails(user);
     }
 }
