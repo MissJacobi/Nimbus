@@ -1,4 +1,5 @@
 package se.jensen.felicia.nimbus.service;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import se.jensen.felicia.nimbus.dto.*;
 import se.jensen.felicia.nimbus.mapper.UserMapper;
@@ -12,10 +13,12 @@ import java.util.Optional;
 public class UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository, UserMapper userMapper) {
+    public UserService(UserRepository userRepository, UserMapper userMapper, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.userMapper = userMapper;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public List<UserResponseDTO> getAllUsers() {
@@ -27,6 +30,7 @@ public class UserService {
 
     public UserResponseDTO addUser(UserRequestDTO userDTO) {
         User user = userMapper.fromDto(userDTO);
+        user.setPassword(passwordEncoder.encode(userDTO.password()));
 
         boolean exist = userRepository.existsByUsernameOrEmail(user.getUsername(), user.getEmail());
         if (exist) {
@@ -46,7 +50,7 @@ public class UserService {
             user.setEmail(dto.email());
             user.setRole(dto.role());
             user.setUsername(dto.username());
-            user.setPassword(dto.password());
+            user.setPassword(passwordEncoder.encode(dto.password()));
             user.setProfileImagePath(dto.profileImagePath());
             User updated = userRepository.save(user);
             return userMapper.toDto(updated);
